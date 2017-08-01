@@ -1,0 +1,14 @@
+/home/francisco/learning/fran/roottranslator/src/main/java/com/franroa/roottranslator/core/Word.java
+/home/francisco/learning/fran/roottranslator/src/main/java/com/franroa/roottranslator/ROOTranslatorApplication.java
+/home/francisco/learning/fran/roottranslator/src/main/java/com/franroa/roottranslator/dto/TranslationRequest.java
+/home/francisco/learning/fran/roottranslator/src/main/java/com/franroa/roottranslator/core/Temporary.java
+/home/francisco/learning/fran/roottranslator/src/main/java/com/franroa/roottranslator/dto/TranslatorRequest.java
+/home/francisco/learning/fran/roottranslator/src/main/java/com/franroa/roottranslator/config/Connection.java
+/home/francisco/learning/fran/roottranslator/src/main/java/com/franroa/roottranslator/resources/TranslatorResource.java
+/home/francisco/learning/fran/roottranslator/src/main/java/com/franroa/roottranslator/dto/WordRequest.java
+/home/francisco/learning/fran/roottranslator/src/main/java/com/franroa/roottranslator/core/AlreadyReadWord.java
+/home/francisco/learning/fran/roottranslator/src/main/java/com/franroa/roottranslator/listeners/DatabaseRequestEventListener.java
+/home/francisco/learning/fran/roottranslator/src/main/java/com/franroa/roottranslator/ROOTranslatorConfiguration.java
+/home/francisco/learning/fran/roottranslator/src/main/java/com/franroa/roottranslator/resources/DictionaryResource.java
+/home/francisco/learning/fran/roottranslator/src/main/java/com/franroa/roottranslator/resources/ImportResource.java
+/home/francisco/learning/fran/roottranslator/src/main/java/com/franroa/roottranslator/listeners/DatabaseApplicationListener.java
