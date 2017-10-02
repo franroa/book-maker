@@ -14,7 +14,6 @@ public class Temporary extends Model {
         try {
             String query = "INSERT INTO temporary (word) SELECT (?) WHERE NOT EXISTS (SELECT word FROM already_read_words WHERE word = (?))";
             PreparedStatement psTwo = Base.startBatch(query);
-            Base.connection().setAutoCommit(false);
 
             for (String word : uniqueWords) {
                 psTwo.setString(1, word);
@@ -23,7 +22,6 @@ public class Temporary extends Model {
             }
 
             psTwo.executeBatch();
-            Base.connection().commit();
 
         } catch (SQLException e) {
             e.printStackTrace();

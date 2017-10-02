@@ -6,15 +6,18 @@ import io.dropwizard.testing.junit.ResourceTestRule;
 import liquibase.Liquibase;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
+import liquibase.logging.LogFactory;
+import liquibase.logging.LogLevel;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.javalite.activejdbc.Base;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
+import org.junit.*;
+
+import java.sql.SQLException;
 
 public class FeatureTestEnvironment {
+    private static boolean migrated = false;
+
     @ClassRule
     public static final ResourceTestRule resources = ResourceTestRule.builder()
             .addProvider(MultiPartFeature.class)
@@ -22,20 +25,43 @@ public class FeatureTestEnvironment {
             .addResource(TranslatorResource.class)
             .build();
 
-    private static Configuration config;
-
     @BeforeClass
     public static void setUp() throws Exception {
-        Base.open("org.postgresql.Driver", "jdbc:postgresql://localhost:5432/dictionary_db_test", "postgres", "password");
+        openDatabaseConnection();
+        migrate();
     }
 
     @AfterClass
     public static void tearDown() throws Exception {
-        Base.close();
+        closeDatabaseConnection();
     }
 
     @Before
-    public void migrate() throws LiquibaseException {
+    public void startTransaction() {
+        Base.openTransaction();
+    }
+
+    @After
+    public void rollbackTransaction() {
+        Base.rollbackTransaction();
+    }
+
+    private static void openDatabaseConnection() {
+        Base.open("org.postgresql.Driver", "jdbc:postgresql://localhost:54322/dictionary_db_test", "postgres", "password");
+    }
+
+    private static void closeDatabaseConnection() {
+        Base.close();
+    }
+
+    private static void migrate() throws LiquibaseException, SQLException {
+        if (migrated) {
+            return;
+        }
+
+        LogFactory.getInstance().getLog().setLogLevel(LogLevel.WARNING);
         new Liquibase("changelog/master.xml", new ClassLoaderResourceAccessor(), new JdbcConnection(Base.connection())).update("");
+        Base.connection().setAutoCommit(true);
+        migrated = true;
     }
 }

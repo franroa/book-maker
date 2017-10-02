@@ -2,7 +2,6 @@
 /home/francisco/learning/fran/roottranslator/src/main/java/com/franroa/roottranslator/ROOTranslatorApplication.java
 /home/francisco/learning/fran/roottranslator/src/main/java/com/franroa/roottranslator/dto/TranslationRequest.java
 /home/francisco/learning/fran/roottranslator/src/main/java/com/franroa/roottranslator/core/Temporary.java
-/home/francisco/learning/fran/roottranslator/src/main/java/com/franroa/roottranslator/dto/TranslatorRequest.java
 /home/francisco/learning/fran/roottranslator/src/main/java/com/franroa/roottranslator/config/Connection.java
 /home/francisco/learning/fran/roottranslator/src/main/java/com/franroa/roottranslator/resources/TranslatorResource.java
 /home/francisco/learning/fran/roottranslator/src/main/java/com/franroa/roottranslator/dto/WordRequest.java

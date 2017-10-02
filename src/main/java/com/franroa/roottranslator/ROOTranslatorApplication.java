@@ -19,7 +19,6 @@ import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
-import org.javalite.activejdbc.Base;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
@@ -65,7 +64,7 @@ public class ROOTranslatorApplication extends Application<ROOTranslatorConfigura
     }
 
     private void registerResources() {
-        environment.jersey().register(TranslatorResource.class);
+        environment.jersey().register(new TranslatorResource());
         environment.jersey().register(new ImportResource());
         environment.jersey().register(new DictionaryResource());
     }

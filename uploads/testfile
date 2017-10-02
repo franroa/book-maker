@@ -2,7 +2,6 @@ Hello World!
 That is a file test.
 The file test has many lines, and also commas and dots. Because I want to split them.
 
-
-subnormal
+sdgsdfg sd sdfg sdfgsdfg
 
 The split should occur that it recognizes the lines and keep them, and keeps the dots and the commas too. pito

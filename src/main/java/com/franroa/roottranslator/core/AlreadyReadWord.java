@@ -10,9 +10,8 @@ import java.util.Set;
 public class AlreadyReadWord extends Model {
     public static void addNewWords(Set<String> uniqueWords) {
         try {
-            String queryToAlreadyReadWords = "INSERT INTO already_read_words (word) values (?) ON CONFLICT DO NOTHING";
+            String queryToAlreadyReadWords = "INSERT INTO already_read_words (word) values (?) ON CONFLICT (word) DO UPDATE SET counter_word_times_read = counter_word_times_read + 1";
             PreparedStatement psOne = Base.startBatch(queryToAlreadyReadWords);
-            Base.connection().setAutoCommit(false);
 
             for (String word : uniqueWords) {
                 psOne.setString(1, word);
@@ -20,7 +19,6 @@ public class AlreadyReadWord extends Model {
 
             }
             psOne.executeBatch();
-            Base.connection().commit();
 
         } catch (SQLException e) {
             e.printStackTrace();
