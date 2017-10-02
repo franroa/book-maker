@@ -1,9 +1,0 @@
-com/franroa/roottranslator/ROOTranslatorConfiguration.class
-com/franroa/roottranslator/ROOTranslatorApplication$1.class
-com/franroa/roottranslator/dto/WordRequest.class
-com/franroa/roottranslator/resources/DictionaryResource.class
-com/franroa/roottranslator/resources/TranslatorResource.class
-com/franroa/roottranslator/dto/TranslationRequest.class
-com/franroa/roottranslator/resources/ImportResource.class
-com/franroa/roottranslator/core/Word.class
-com/franroa/roottranslator/ROOTranslatorApplication.class
