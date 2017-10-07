@@ -6,6 +6,7 @@ server:
   applicationConnectors:
     - type: http
       port: 8181
+
   adminConnectors:
     - type: http
       port: 9001

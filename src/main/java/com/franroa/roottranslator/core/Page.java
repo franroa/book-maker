@@ -7,5 +7,5 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.HashSet;
 
-public class Pages extends Model {
+public class Page extends Model {
 }

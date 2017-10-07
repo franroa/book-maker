@@ -4,18 +4,32 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
     <changeSet author="franroa" id="1">
-        <createTable tableName="image" schemaName="public">
+        <createTable tableName="resources" schemaName="public">
             <column name="BIGINT" type="BIGINT" autoIncrement="true">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_image" />
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_resource" />
             </column>
 
-            <column name="image" type="TEXT">
-                <constraints nullable="false" />
-            </column>
+            <column name="input_stream" type="TEXT" />
 
-            <column name="path" type="TEXT">
-                <constraints nullable="false" />
-            </column>
+            <column name="data" type="TEXT" />
+
+            <column name="input_encoding" type="VARCHAR(255)" />
+
+            <column name="href" type="VARCHAR(255)" />
+
+            <column name="media_type" type="VARCHAR(200)" />
+
+            <column name="title" type="TEXT" />
+
+            <column name="toc_href" type="VARCHAR(255)" />
+
+            <column name="id" type="VARCHAR(255)" />
+
+            <column name="original_href" type="VARCHAR(255)" />
+
+            <column name="reader" type="VARCHAR(255)" />
+
+            <column name="size" type="INT" />
         </createTable>
     </changeSet>
 </databaseChangeLog>

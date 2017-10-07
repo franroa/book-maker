@@ -4,12 +4,12 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
     <changeSet author="franroa" id="1">
-        <createTable tableName="temporary" schemaName="public">
+        <createTable tableName="books" schemaName="public">
             <column name="id" type="BIGINT" autoIncrement="true">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_temporary" />
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_book" />
             </column>
 
-            <column name="word" type="VARCHAR(255)">
+            <column name="book" type="TEXT">
                 <constraints nullable="false" />
             </column>
         </createTable>

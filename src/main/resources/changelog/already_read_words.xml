@@ -12,10 +12,6 @@
             <column name="word" type="VARCHAR(255)">
                 <constraints nullable="false" unique="true"/>
             </column>
-
-            <column name="counter_word_times_read" type="INT" defaultValue="1">
-                <constraints nullable="false" />
-            </column>
         </createTable>
     </changeSet>
 

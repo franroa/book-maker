@@ -2,7 +2,6 @@ package com.franroa.roottranslator;
 
 import com.franroa.roottranslator.config.Connection;
 import com.franroa.roottranslator.listeners.DatabaseApplicationListener;
-import com.franroa.roottranslator.resources.DictionaryResource;
 import com.franroa.roottranslator.resources.ImportResource;
 import com.franroa.roottranslator.resources.TranslatorResource;
 import com.google.inject.Binder;
@@ -25,8 +24,6 @@ import javax.servlet.FilterRegistration;
 import java.util.EnumSet;
 
 public class ROOTranslatorApplication extends Application<ROOTranslatorConfiguration> {
-    private Injector injector;
-
     private static final String MIGRATIONS_MASTER_FILE_PATH = "changelog/master.xml";
 
     private Environment environment;
@@ -44,7 +41,6 @@ public class ROOTranslatorApplication extends Application<ROOTranslatorConfigura
     public void run(final ROOTranslatorConfiguration configuration, final Environment environment) {
         this.configuration = configuration;
         this.environment = environment;
-//        this.injector = createInjector();
 
         initializeDb();
         runMigrations();
@@ -66,7 +62,6 @@ public class ROOTranslatorApplication extends Application<ROOTranslatorConfigura
     private void registerResources() {
         environment.jersey().register(new TranslatorResource());
         environment.jersey().register(new ImportResource());
-        environment.jersey().register(new DictionaryResource());
     }
 
     private void initializeDb() {
@@ -96,16 +91,4 @@ public class ROOTranslatorApplication extends Application<ROOTranslatorConfigura
         filter.setInitParameter("allowedHeaders", "Content-Type,Authorization,X-Requested-With,Content-Length,Accept,Origin");
         filter.setInitParameter("allowCredentials", "true");
     }
-
-    private Injector createInjector() {
-        Module appModule = new Module() {
-            @Override
-            public void configure(Binder binder) {
-                binder.bind(ROOTranslatorConfiguration.class).toInstance(new ROOTranslatorConfiguration());
-            }
-        };
-
-        return Guice.createInjector(appModule);
-    }
 }
-

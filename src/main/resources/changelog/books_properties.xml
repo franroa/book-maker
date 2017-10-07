@@ -4,11 +4,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
     <changeSet author="franroa" id="1">
-        <createTable tableName="book" schemaName="public">
-            <column name="BIGINT" type="BIGINT" autoIncrement="true">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_temporary" />
-            </column>
-
+        <createTable tableName="book_properties" schemaName="public">
             <column name="book_id" type="VARCHAR(255)">
                 <constraints nullable="false" />
             </column>
@@ -18,22 +14,6 @@
             </column>
 
             <column name="entity_id" type="BIGINT">
-                <constraints nullable="false" />
-            </column>
-
-            <column name="page" type="VARCHAR(255)">
-                <constraints nullable="false" />
-            </column>
-
-            <column name="style" type="VARCHAR(255)">
-                <constraints nullable="false" />
-            </column>
-
-            <column name="image" type="VARCHAR(255)">
-                <constraints nullable="false" />
-            </column>
-
-            <column name="ncx" type="VARCHAR(255)">
                 <constraints nullable="false" />
             </column>
         </createTable>

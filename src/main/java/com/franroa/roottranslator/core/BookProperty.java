@@ -1,6 +1,8 @@
 package com.franroa.roottranslator.core;
 
 import org.javalite.activejdbc.Model;
+import org.javalite.activejdbc.annotations.Table;
 
-public class Image extends Model {
+@Table("books_properties")
+public class BookProperty extends Model {
 }
