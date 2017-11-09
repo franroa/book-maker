@@ -3,7 +3,7 @@ package com.franroa.roottranslator.resources;
 import com.franroa.roottranslator.core.AlreadyReadWord;
 import com.franroa.roottranslator.core.Temporary;
 import com.franroa.roottranslator.dto.BookTextResponse;
-import com.franroa.roottranslator.dto.TranslationRequest;
+import com.franroa.roottranslator.jobs.sendBookToBookMakerJob;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.epub.EpubReader;
@@ -26,12 +26,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.*;
-import java.sql.SQLException;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Scanner;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
@@ -69,21 +68,28 @@ public class ImportResource {
         }
 
         if (epub.getSpine().getTocResource() == null) {
-            Scanner s2 = new Scanner(epub.getOpfResource().getInputStream()).useDelimiter("\\A");
-            String metadata = s2.hasNext() ? s2.next() : "";
+            String metadata = new String(epub.getOpfResource().getData());
             Document docMetadata = Jsoup.parse(metadata);
-            Elements aPackage = docMetadata.getElementsByAttribute("idref");
+//            Elements aPackage = docMetadata.getElementsByAttribute("idref");
+            Elements aPackage = docMetadata.getElementsByTag("manifest").get(0).getElementsByAttribute("href");
+//            docMetadata.getElementsByTag("spine").get(0).getElementsByAttributeValue("linear", "yes")
 
             Iterator<Element> metadataIterator = aPackage.iterator();
 
             while (metadataIterator.hasNext()) {
-                String idref = metadataIterator.next().attr("idref");
+//                String idref = metadataIterator.next().attr("idref");
+                Element element = metadataIterator.next();
 
-                Scanner s = new Scanner(epub.getResources().getByIdOrHref("OEBPS/Text/" + idref).getInputStream()).useDelimiter("\\A");
-                String result = s.hasNext() ? s.next() : "";
-                Document doc = Jsoup.parse(result);
-                Elements html = doc.getElementsByTag("html");
-                rawText += " " + html.text();
+                if (element.attr("media-type").equals("application/xhtml+xml")) {
+                    String idref = element.attr("href");
+                    Scanner s = new Scanner(epub.getResources().getByIdOrHref("OEBPS/" + idref).getInputStream()).useDelimiter("\\A");
+//                Scanner s = new Scanner(epub.getResources().getByIdOrHref("OEBPS/Text/" + idref).getInputStream()).useDelimiter("\\A");
+                    String result = s.hasNext() ? s.next() : "";
+                    Document doc = Jsoup.parse(result);
+                    Elements html = doc.getElementsByTag("html");
+                    rawText += " " + html.text();
+                }
+
             }
         }
 
@@ -107,12 +113,10 @@ public class ImportResource {
         } finally {
             Base.close();
         }
-//
-//        Client client = createClient();
-//        Response response = client.target("http://localhost:8000/api/v1/word/store")
-//                .request()
-//                .accept(MediaType.APPLICATION_JSON_TYPE)
-//                .post(Entity.entity(new TranslationRequest(wordToTranslate, "de", "es"), APPLICATION_JSON), Response.class);
+
+        new sendBookToBookMakerJob()
+                .setUploadFileLocation(uploadedFileLocation)
+                .dispatch();
 
 
         return Response.ok().entity(new BookTextResponse(rawText, wordsToSave)).build();

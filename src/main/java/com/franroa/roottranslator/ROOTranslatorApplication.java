@@ -2,6 +2,7 @@ package com.franroa.roottranslator;
 
 import com.franroa.roottranslator.config.Connection;
 import com.franroa.roottranslator.listeners.DatabaseApplicationListener;
+import com.franroa.roottranslator.queue.QueueManager;
 import com.franroa.roottranslator.resources.ImportResource;
 import com.franroa.roottranslator.resources.TranslatorResource;
 import com.google.inject.Binder;
@@ -42,6 +43,8 @@ public class ROOTranslatorApplication extends Application<ROOTranslatorConfigura
         this.configuration = configuration;
         this.environment = environment;
 
+        ROOTTranslatorContainer.initialize(configuration);
+
         initializeDb();
         runMigrations();
         registerFeatures();
@@ -49,6 +52,7 @@ public class ROOTranslatorApplication extends Application<ROOTranslatorConfigura
         registerEventListeners();
 
         configureCors(environment);
+        environment.lifecycle().manage(new QueueManager());
     }
 
     private void registerEventListeners() {

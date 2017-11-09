@@ -15,3 +15,17 @@ database:
   driverClass: org.postgresql.Driver
   user: postgres
   url: jdbc:postgresql://localhost:5432/dictionary_db
+  initialSize: 1
+  minSize: 1
+  maxSize: 4
+
+queue:
+  type: "QUARTZ"
+  quartz:
+    org.quartz.threadPool.threadCount: "1"
+    org.quartz.jobStore.class: org.quartz.impl.jdbcjobstore.JobStoreTX
+    org.quartz.jobStore.driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
+    org.quartz.jobStore.dataSource: queue
+    org.quartz.jobStore.tablePrefix: "ZZ_QRTZ_"
+    org.quartz.jobStore.isClustered: true
+    org.quartz.dataSource.queue.connectionProvider.class: com.franroa.roottranslator.queue.config.QueueConnectionProvider

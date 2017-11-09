@@ -13,4 +13,5 @@
     <include file="changelog/styles.xml"/>
     <include file="changelog/pages.xml"/>
     <include file="changelog/resources.xml"/>
+    <include file="changelog/quartz.xml"/>
 </databaseChangeLog>

@@ -2,6 +2,7 @@ package com.franroa.roottranslator;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.franroa.roottranslator.queue.config.QueueConfiguration;
 import io.dropwizard.Configuration;
 import io.dropwizard.db.DataSourceFactory;
 
@@ -27,6 +28,13 @@ public class ROOTranslatorConfiguration extends Configuration {
     @JsonProperty("fakedDependenciesEnabled")
     private Boolean fakedDependenciesEnabled;
 
+    @NotNull
+    @JsonProperty("queue")
+    private QueueConfiguration queue;
+
+    public QueueConfiguration getQueueConfiguration() {
+        return queue;
+    }
 
     public DataSourceFactory getDataSourceFactory() {
         database.setPassword(readDatabasePassword());

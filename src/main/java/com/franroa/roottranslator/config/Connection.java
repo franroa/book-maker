@@ -40,4 +40,8 @@ public final class Connection {
     public static void setDatasource(ManagedDataSource dataSource) {
         Connection.dataSource = dataSource;
     }
+
+    public static ManagedDataSource getDataSource() {
+        return dataSource;
+    }
 }
