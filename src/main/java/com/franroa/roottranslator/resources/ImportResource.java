@@ -1,9 +1,11 @@
 package com.franroa.roottranslator.resources;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.franroa.roottranslator.core.AlreadyReadWord;
 import com.franroa.roottranslator.core.Temporary;
 import com.franroa.roottranslator.dto.BookTextResponse;
-import com.franroa.roottranslator.jobs.sendBookToBookMakerJob;
+import com.franroa.roottranslator.jobs.SendBookToBookMakerJob;
+import com.franroa.roottranslator.jobs.SendTranslateWordToScrapperJob;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.epub.EpubReader;
@@ -13,6 +15,7 @@ import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.javalite.activejdbc.Base;
+import org.javalite.activejdbc.LazyList;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -45,6 +48,9 @@ public class ImportResource {
     public Response uploadFile(
             @FormDataParam("file") InputStream uploadedInputStream,
             @FormDataParam("file") FormDataContentDisposition fileDetail) throws Exception {
+
+        com.franroa.roottranslator.config.Connection.getDataSource();
+
         String uploadedFileLocation = "uploads/" + fileDetail.getFileName();
 
         writeToFile(uploadedInputStream, uploadedFileLocation);
@@ -98,7 +104,7 @@ public class ImportResource {
         }
 
         HashSet wordsToSave = new HashSet();
-        String[] words = rawText.toUpperCase().replaceAll("[^\\p{L}\\p{Nd}]+", " ").split("\\s");
+        String[] words = rawText.replace('ß', '\u9999').toUpperCase().replace('\u9999', 'ß').replaceAll("[^\\p{L}]+", " ").split("\\s");
         for (String word : words) {
             wordsToSave.add(word);
         }
@@ -110,19 +116,22 @@ public class ImportResource {
             Base.commitTransaction();
         } catch(Exception e) {
             Base.rollbackTransaction();
-        } finally {
-            Base.close();
+        }
+//        } finally {
+//            Base.close();
+//        }
+
+        LazyList<Temporary> temporalWords = Temporary.findAll();
+
+        if (temporalWords.isEmpty()) {
+            return Response.ok().entity(new ObjectMapper().createObjectNode().put("error", "database is empty")).build();
         }
 
-        new sendBookToBookMakerJob()
+        new SendBookToBookMakerJob()
                 .setUploadFileLocation(uploadedFileLocation)
                 .dispatch();
-
-
+        new SendTranslateWordToScrapperJob().dispatch();
         return Response.ok().entity(new BookTextResponse(rawText, wordsToSave)).build();
-
-
-
 
 //        List<Resource> resourceList = new ArrayList<>();
 //        Scanner s2 = new Scanner(epub.getOpfResource().getInputStream()).useDelimiter("\\A");

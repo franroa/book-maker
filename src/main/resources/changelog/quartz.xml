@@ -179,7 +179,7 @@
             <column name="TRIGGER_GROUP" type="NVARCHAR(150)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="JOB_DATA" type="BLOB"/>
+            <column name="JOB_DATA" type="BYTEA"/>
         </createTable>
 
         <createTable tableName="ZZ_QRTZ_TRIGGERS">
@@ -214,7 +214,7 @@
             <column name="END_TIME" type="BIGINT"/>
             <column name="CALENDAR_NAME" type="NVARCHAR(200)"/>
             <column name="MISFIRE_INSTR" type="SMALLINT"/>
-            <column name="JOB_DATA" type="BLOB"/>
+            <column name="JOB_DATA" type="BYTEA"/>
         </createTable>
     </changeSet>
 

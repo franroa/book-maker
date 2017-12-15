@@ -2,7 +2,11 @@ package com.franroa.roottranslator;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.franroa.roottranslator.correlation.CorrelationConfig;
 import com.franroa.roottranslator.queue.config.QueueConfiguration;
+import com.franroa.roottranslator.services.bookmaker.BookMakerServiceConfiguration;
+import com.franroa.roottranslator.services.mail.config.EmailServiceConfiguration;
+import com.franroa.roottranslator.services.translatorgui.TranslatorGuiConfiguration;
 import io.dropwizard.Configuration;
 import io.dropwizard.db.DataSourceFactory;
 
@@ -20,34 +24,27 @@ public class ROOTranslatorConfiguration extends Configuration {
     @JsonProperty
     private DataSourceFactory database = new DataSourceFactory();
 
-    @NotNull
-    @JsonProperty("uploadPath")
-    private String uploadPath;
+    @JsonProperty("email")
+    private EmailServiceConfiguration email;
 
-    @NotNull
-    @JsonProperty("fakedDependenciesEnabled")
-    private Boolean fakedDependenciesEnabled;
-
-    @NotNull
     @JsonProperty("queue")
     private QueueConfiguration queue;
 
-    public QueueConfiguration getQueueConfiguration() {
-        return queue;
-    }
+    @JsonProperty("correlation")
+    private CorrelationConfig correlation;
+
+    @JsonProperty("translatorGui")
+    private TranslatorGuiConfiguration translatorGui;
+
+    @JsonProperty("bookMaker")
+    private BookMakerServiceConfiguration bookMaker;
 
     public DataSourceFactory getDataSourceFactory() {
-        database.setPassword(readDatabasePassword());
+        if (database.getPassword() == null) {
+            database.setPassword(readDatabasePassword());
+        }
 
         return database;
-    }
-
-    public String getUploadPath() {
-        return this.uploadPath;
-    }
-
-    public Boolean areFakedDependenciesEnabled() {
-        return fakedDependenciesEnabled;
     }
 
     private String readDatabasePassword() {
@@ -56,5 +53,29 @@ public class ROOTranslatorConfiguration extends Configuration {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public EmailServiceConfiguration getEmailConfiguration() {
+        return email != null ? email : new EmailServiceConfiguration();
+    }
+
+    public QueueConfiguration getQueueConfiguration() {
+        return queue != null ? queue : new QueueConfiguration();
+    }
+
+    public CorrelationConfig getCorrelation() {
+        return correlation != null ? correlation : new CorrelationConfig();
+    }
+
+    public String getMigrationsMasterFilePath() {
+        return "changelog/master.xml";
+    }
+
+    public TranslatorGuiConfiguration getTranslatorGuiConfiguration() {
+        return translatorGui;
+    }
+
+    public BookMakerServiceConfiguration getBookMakerConfiguation() {
+        return bookMaker;
     }
 }

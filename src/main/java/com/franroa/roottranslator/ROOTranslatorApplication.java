@@ -1,14 +1,10 @@
 package com.franroa.roottranslator;
 
 import com.franroa.roottranslator.config.Connection;
+import com.franroa.roottranslator.jobs.SendTranslateWordToScrapperJob;
 import com.franroa.roottranslator.listeners.DatabaseApplicationListener;
+import com.franroa.roottranslator.provider.core.Registry;
 import com.franroa.roottranslator.queue.QueueManager;
-import com.franroa.roottranslator.resources.ImportResource;
-import com.franroa.roottranslator.resources.TranslatorResource;
-import com.google.inject.Binder;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.google.inject.Module;
 import io.dropwizard.Application;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.db.ManagedDataSource;
@@ -19,56 +15,59 @@ import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
+import javax.ws.rs.WebApplicationException;
 import java.util.EnumSet;
 
 public class ROOTranslatorApplication extends Application<ROOTranslatorConfiguration> {
-    private static final String MIGRATIONS_MASTER_FILE_PATH = "changelog/master.xml";
+    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ROOTranslatorApplication.class);
 
     private Environment environment;
     private ROOTranslatorConfiguration configuration;
+    private Registry registry;
 
     public static void main(final String[] args) throws Exception {
         new ROOTranslatorApplication().run(args);
     }
 
-//    @Override
-//    public void initialize(Bootstrap<ROOTranslatorConfiguration> bootstrap) {
-//        // nothing to do yet
-//    }
-
-    public void run(final ROOTranslatorConfiguration configuration, final Environment environment) {
+    @Override
+    public void run(ROOTranslatorConfiguration configuration, Environment environment) throws Exception {
         this.configuration = configuration;
         this.environment = environment;
-
-        ROOTTranslatorContainer.initialize(configuration);
+        this.registry = new Registry(configuration);
+        registry.initializeProviders();
 
         initializeDb();
         runMigrations();
         registerFeatures();
-        registerResources();
-        registerEventListeners();
+        initializeResources();
 
         configureCors(environment);
         environment.lifecycle().manage(new QueueManager());
+
+        new SendTranslateWordToScrapperJob().dispatch();
     }
 
-    private void registerEventListeners() {
-        environment.jersey().register(new DatabaseApplicationListener());
+    private void initializeResources() {
+        registry.getResources().forEach(resource -> {
+            if (resource instanceof Class) {
+                environment.jersey().register((Class) resource);
+            } else {
+                environment.jersey().register(resource);
+            }
+        });
     }
 
     private void registerFeatures() {
         environment.jersey().register(MultiPartFeature.class); // that is needed to upload files
     }
 
-    private void registerResources() {
-        environment.jersey().register(new TranslatorResource());
-        environment.jersey().register(new ImportResource());
-    }
-
     private void initializeDb() {
+        environment.jersey().register(new DatabaseApplicationListener());
+
         DataSourceFactory dataSourceFactory = configuration.getDataSourceFactory();
         ManagedDataSource ds = dataSourceFactory.build(environment.metrics(), "pool");
         Connection.setDatasource(ds);
@@ -77,10 +76,16 @@ public class ROOTranslatorApplication extends Application<ROOTranslatorConfigura
     private void runMigrations() {
         try {
             Connection.open();
-            Liquibase migrator = new Liquibase(MIGRATIONS_MASTER_FILE_PATH, new ClassLoaderResourceAccessor(), new JdbcConnection(Connection.get()));
+            Liquibase migrator = new Liquibase(
+                    configuration.getMigrationsMasterFilePath(),
+                    new ClassLoaderResourceAccessor(),
+                    new JdbcConnection(Connection.get())
+            );
             migrator.update("");
         } catch (LiquibaseException e) {
-            e.printStackTrace();
+            String msg = "There was an error while running the migrations on the database: " + e.getMessage();
+            LOGGER.error(msg, e);
+            throw new WebApplicationException(e);
         } finally {
             Connection.close();
         }

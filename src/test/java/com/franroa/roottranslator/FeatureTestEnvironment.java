@@ -1,7 +1,6 @@
 package com.franroa.roottranslator;
 
 import com.franroa.roottranslator.resources.ImportResource;
-import com.franroa.roottranslator.resources.TranslatorResource;
 import io.dropwizard.testing.junit.ResourceTestRule;
 import liquibase.Liquibase;
 import liquibase.database.jvm.JdbcConnection;
@@ -21,8 +20,8 @@ public class FeatureTestEnvironment {
     @ClassRule
     public static final ResourceTestRule resources = ResourceTestRule.builder()
             .addProvider(MultiPartFeature.class)
+//            .addResource(new MultiPartFeature())
             .addResource(new ImportResource())
-            .addResource(TranslatorResource.class)
             .build();
 
     @BeforeClass
